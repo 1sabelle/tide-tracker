@@ -3,13 +3,35 @@ import { todayIso } from './dates.js';
 import { parseData } from './storage.js';
 
 const SETTING_LABELS = {
-  cycleLength: 'Default cycle length (used until two periods are logged)',
+  cycleLength: 'Default cycle length',
   periodLength: 'Default period length',
   lutealLength: 'Days from ovulation to next period',
 };
 
-export default function Settings({ data, onReplace }) {
+function plural(count, word) {
+  return `${count} ${word}${count === 1 ? '' : 's'}`;
+}
+
+// Whether the app is using each setting right now, or a value measured from the logged periods instead.
+function describeSettingUse(prediction) {
+  const basedOnCycles = prediction?.basedOnCycles ?? 0;
+  const basedOnPeriods = prediction?.basedOnPeriods ?? 0;
+  return {
+    cycleLength:
+      basedOnCycles > 0
+        ? { isOverridden: true, text: `Not used: your logs give ${plural(prediction.cycleLength, 'day')}, averaged over ${plural(basedOnCycles, 'cycle')}.` }
+        : { isOverridden: false, text: 'In use until a full cycle is logged (two period starts).' },
+    periodLength:
+      basedOnPeriods > 0
+        ? { isOverridden: true, text: `Not used: your logs give ${plural(prediction.periodLength, 'day')}, averaged over ${plural(basedOnPeriods, 'period')}.` }
+        : { isOverridden: false, text: 'In use until a finished period is logged.' },
+    lutealLength: { isOverridden: false, text: 'Always in use: ovulation cannot be measured from period dates.' },
+  };
+}
+
+export default function Settings({ data, prediction, onReplace }) {
   const [importMessages, setImportMessages] = useState([]);
+  const settingUse = describeSettingUse(prediction);
 
   function updateSetting(name, valueText) {
     const value = Number(valueText);
@@ -45,16 +67,19 @@ export default function Settings({ data, onReplace }) {
     <details className="settings">
       <summary>Settings and data</summary>
       {Object.entries(SETTING_LABELS).map(([name, label]) => (
-        <label key={name}>
-          {label}
-          <input
-            type="number"
-            min={1}
-            max={90}
-            value={data.settings[name]}
-            onChange={(e) => updateSetting(name, e.target.value)}
-          />
-        </label>
+        <div key={name} className={`setting ${settingUse[name].isOverridden ? 'is-overridden' : ''}`}>
+          <label>
+            {label}
+            <input
+              type="number"
+              min={1}
+              max={90}
+              value={data.settings[name]}
+              onChange={(e) => updateSetting(name, e.target.value)}
+            />
+          </label>
+          <p className="setting-use">{settingUse[name].text}</p>
+        </div>
       ))}
       <p className="hint">Your data is stored only in this browser. Export it regularly as a backup.</p>
       <div className="data-actions">

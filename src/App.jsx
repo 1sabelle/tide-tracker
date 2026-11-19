@@ -65,7 +65,7 @@ export default function App() {
         onSelect={setSelectedDate}
       />
       <History logs={data.logs} prediction={prediction} today={today} onAddPastPeriod={addPastPeriod} />
-      <Settings data={data} onReplace={setData} />
+      <Settings data={data} prediction={prediction} onReplace={setData} />
       <footer>
         Predictions are calendar estimates (ovulation about {data.settings.lutealLength} days before the next
         period). They are not reliable for contraception.

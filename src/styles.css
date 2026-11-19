@@ -119,6 +119,9 @@ th { color: var(--muted); font-weight: 500; font-size: 0.8rem; }
 .settings label { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 10px; }
 .settings input[type='number'] { width: 70px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; background: var(--raised); }
 .hint { color: var(--muted); font-size: 0.85rem; }
+.setting-use { margin: 2px 0 0; font-size: 0.8rem; color: var(--muted); }
+.setting.is-overridden input { opacity: 0.5; }
+.setting:not(.is-overridden) .setting-use { color: var(--accent); }
 .data-actions { display: flex; gap: 8px; }
 .data-actions button, .data-actions .button {
   border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; cursor: pointer; margin: 0;

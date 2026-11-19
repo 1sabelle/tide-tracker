@@ -44,6 +44,7 @@ describe('predictCycles', () => {
     const prediction = predictCycles(logs, DEFAULT_SETTINGS, '2026-03-01');
     expect(prediction.cycleLength).toBe(28);
     expect(prediction.basedOnCycles).toBe(2);
+    expect(prediction.basedOnPeriods).toBe(3);
     expect(prediction.nextPeriod).toMatchObject({ start: '2026-03-26', earliest: '2026-03-24', latest: '2026-03-28' });
     expect(prediction.daysUntilNextPeriod).toBe(25);
   });

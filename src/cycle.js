@@ -141,6 +141,7 @@ export function predictCycles(logs, settings, today) {
     cycleLength,
     periodLength,
     basedOnCycles: recentCycleLengths.length,
+    basedOnPeriods: recentPeriodLengths.length,
     cycleDay: daysBetween(lastPeriod.start, today) + 1,
     nextPeriod: {
       start: nextPeriodStart,
