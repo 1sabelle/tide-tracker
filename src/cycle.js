@@ -4,6 +4,7 @@ export const FLOW_LEVELS = ['none', 'spotting', 'light', 'medium', 'heavy'];
 export const CRAMP_LEVELS = ['none', 'mild', 'moderate', 'severe'];
 export const SYMPTOMS = [
   'headache',
+  'migraine',
   'bloating',
   'breast tenderness',
   'acne',
