@@ -12,7 +12,18 @@ export const SYMPTOMS = [
   'nausea',
   'cravings',
 ];
+export const PAINKILLERS = ['ibuprofen', 'paracetamol'];
 export const MOODS = ['happy', 'calm', 'sensitive', 'irritable', 'low', 'anxious'];
+
+export const EMPTY_DAY_LOG = {
+  flow: 'none',
+  cramps: 0,
+  symptoms: [],
+  painkillers: [],
+  mood: null,
+  notes: '',
+  unprotectedSex: false,
+};
 
 export const DEFAULT_SETTINGS = {
   cycleLength: 28,
@@ -179,7 +190,7 @@ export function classifyDay(date, prediction) {
 export function logPastPeriod(logs, start, end, flow) {
   const updatedLogs = { ...logs };
   for (let date = start; date <= end; date = addDays(date, 1)) {
-    const dayLog = logs[date] ?? { flow: 'none', cramps: 0, symptoms: [], mood: null, notes: '', unprotectedSex: false };
+    const dayLog = logs[date] ?? EMPTY_DAY_LOG;
     updatedLogs[date] = isBleedingDay(dayLog) ? dayLog : { ...dayLog, flow };
   }
   return updatedLogs;
@@ -190,6 +201,7 @@ export function isEmptyLog(dayLog) {
     (dayLog.flow ?? 'none') === 'none' &&
     (dayLog.cramps ?? 0) === 0 &&
     (dayLog.symptoms ?? []).length === 0 &&
+    (dayLog.painkillers ?? []).length === 0 &&
     !dayLog.mood &&
     !dayLog.unprotectedSex &&
     !(dayLog.notes ?? '').trim()

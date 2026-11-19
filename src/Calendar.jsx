@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { classifyDay } from './cycle.js';
-import { CrampMark, FlowMark, NoteMark, SexMark } from './DayMarks.jsx';
+import { CrampMark, FlowMark, NoteMark, PainkillerMark, SexMark } from './DayMarks.jsx';
 import { formatMonth, isoForYearMonthDay, weekdayMondayFirst } from './dates.js';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -54,6 +54,7 @@ export default function Calendar({ logs, prediction, today, selectedDate, onSele
                 {dayLog?.flow && dayLog.flow !== 'none' && <FlowMark flow={dayLog.flow} />}
                 {dayLog?.cramps > 0 && <CrampMark cramps={dayLog.cramps} />}
                 {(dayLog?.symptoms?.length > 0 || dayLog?.notes) && <NoteMark />}
+                {dayLog?.painkillers?.length > 0 && <PainkillerMark />}
                 {dayLog?.unprotectedSex && <SexMark />}
               </span>
             </button>

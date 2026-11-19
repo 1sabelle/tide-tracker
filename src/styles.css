@@ -16,6 +16,7 @@
   --fertile: #8fd0cc2e;
   --ovulation: #8fd0cc;
   --implantation: #b3a6e6;
+  --painkiller: #86b8e0;
   --warning: #e68aae;
   color-scheme: dark;
 }
@@ -78,6 +79,7 @@ section, .settings, .collapsible { background: var(--surface); border: 1px solid
 .flow-heavy { width: 10px; height: 10px; }
 .cramp-mark { color: var(--accent); font-weight: 700; letter-spacing: -1px; }
 .note-mark { width: 5px; height: 5px; border-radius: 50%; background: var(--muted); }
+.painkiller-mark { width: 4px; height: 8px; border-radius: 2px; background: var(--painkiller); }
 
 .legend { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; font-size: 0.8rem; color: var(--muted); }
 .legend span { display: flex; align-items: center; gap: 5px; }

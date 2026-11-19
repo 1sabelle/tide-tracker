@@ -13,6 +13,10 @@ export function NoteMark() {
   return <span className="note-mark" />;
 }
 
+export function PainkillerMark() {
+  return <span className="painkiller-mark" aria-label="painkillers" />;
+}
+
 export function SexMark() {
   return <span className="sex-mark" aria-label="unprotected sex">♥</span>;
 }

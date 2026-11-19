@@ -1,4 +1,4 @@
-import { CRAMP_LEVELS, DEFAULT_SETTINGS, FLOW_LEVELS, MOODS, SYMPTOMS } from './cycle.js';
+import { CRAMP_LEVELS, DEFAULT_SETTINGS, FLOW_LEVELS, MOODS, PAINKILLERS, SYMPTOMS } from './cycle.js';
 import { isIsoDate } from './dates.js';
 
 const STORAGE_KEY = 'mtracker.v1';
@@ -90,6 +90,13 @@ function collectDayLogErrors(date, dayLog) {
       for (const symptom of dayLog.symptoms)
         if (!SYMPTOMS.includes(symptom)) errors.push(`${date}: symptom "${symptom}" is not one of ${SYMPTOMS.join(', ')}.`);
   }
+  if (dayLog.painkillers !== undefined) {
+    if (!Array.isArray(dayLog.painkillers)) errors.push(`${date}: painkillers "${dayLog.painkillers}" is not a list.`);
+    else
+      for (const painkiller of dayLog.painkillers)
+        if (!PAINKILLERS.includes(painkiller))
+          errors.push(`${date}: painkiller "${painkiller}" is not one of ${PAINKILLERS.join(', ')}.`);
+  }
   if (dayLog.mood !== undefined && dayLog.mood !== null && !MOODS.includes(dayLog.mood))
     errors.push(`${date}: mood "${dayLog.mood}" is not one of ${MOODS.join(', ')}.`);
   if (dayLog.unprotectedSex !== undefined && typeof dayLog.unprotectedSex !== 'boolean')
@@ -104,6 +111,7 @@ function normalizeDayLog(dayLog) {
     flow: dayLog.flow ?? 'none',
     cramps: dayLog.cramps ?? 0,
     symptoms: dayLog.symptoms ?? [],
+    painkillers: dayLog.painkillers ?? [],
     mood: dayLog.mood ?? null,
     notes: dayLog.notes ?? '',
     unprotectedSex: dayLog.unprotectedSex ?? false,

@@ -1,11 +1,9 @@
-import { CRAMP_LEVELS, FLOW_LEVELS, MOODS, SYMPTOMS } from './cycle.js';
+import { CRAMP_LEVELS, EMPTY_DAY_LOG, FLOW_LEVELS, MOODS, PAINKILLERS, SYMPTOMS } from './cycle.js';
 import { formatLong } from './dates.js';
-import { CrampMark, FlowMark, NoteMark, SexMark } from './DayMarks.jsx';
+import { CrampMark, FlowMark, NoteMark, PainkillerMark, SexMark } from './DayMarks.jsx';
 
-const EMPTY_LOG = { flow: 'none', cramps: 0, symptoms: [], mood: null, notes: '', unprotectedSex: false };
-
-export default function DayEditor({ date, dayLog = EMPTY_LOG, onChange }) {
-  const log = { ...EMPTY_LOG, ...dayLog };
+export default function DayEditor({ date, dayLog = EMPTY_DAY_LOG, onChange }) {
+  const log = { ...EMPTY_DAY_LOG, ...dayLog };
   const update = (changes) => onChange({ ...log, ...changes });
 
   function toggleSymptom(symptom) {
@@ -13,6 +11,13 @@ export default function DayEditor({ date, dayLog = EMPTY_LOG, onChange }) {
       ? log.symptoms.filter((s) => s !== symptom)
       : [...log.symptoms, symptom];
     update({ symptoms });
+  }
+
+  function togglePainkiller(painkiller) {
+    const painkillers = log.painkillers.includes(painkiller)
+      ? log.painkillers.filter((p) => p !== painkiller)
+      : [...log.painkillers, painkiller];
+    update({ painkillers });
   }
 
   return (
@@ -53,6 +58,21 @@ export default function DayEditor({ date, dayLog = EMPTY_LOG, onChange }) {
               onClick={() => toggleSymptom(symptom)}
             >
               {symptom}
+            </button>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Painkillers <PainkillerMark /></legend>
+        <div className="chips">
+          {PAINKILLERS.map((painkiller) => (
+            <button
+              key={painkiller}
+              className={`chip ${log.painkillers.includes(painkiller) ? 'on' : ''}`}
+              onClick={() => togglePainkiller(painkiller)}
+            >
+              {painkiller}
             </button>
           ))}
         </div>

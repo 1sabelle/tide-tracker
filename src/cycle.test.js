@@ -106,6 +106,15 @@ describe('logPastPeriod', () => {
 });
 
 describe('parseData', () => {
+  it('keeps logged painkillers and reports unknown ones', () => {
+    const { data, errors } = parseData({
+      logs: { '2026-01-01': { painkillers: ['ibuprofen'] }, '2026-01-02': { painkillers: ['aspirin'] } },
+    });
+    expect(data.logs['2026-01-01'].painkillers).toEqual(['ibuprofen']);
+    expect(data.logs['2026-01-02']).toBeUndefined();
+    expect(errors).toEqual(['2026-01-02: painkiller "aspirin" is not one of ibuprofen, paracetamol.']);
+  });
+
   it('loads days saved with the old "sad" mood as "low"', () => {
     const { data, errors } = parseData({ logs: { '2026-01-01': { mood: 'sad' } } });
     expect(errors).toEqual([]);
