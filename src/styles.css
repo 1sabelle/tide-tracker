@@ -29,8 +29,7 @@ body {
   font: 15px/1.45 'Figtree Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 h1, h2, .collapsible > summary, .settings summary {
-  font-family: 'Fraunces Variable', Georgia, serif;
-  font-variation-settings: 'SOFT' 100;
+  font-family: 'Lora Variable', Georgia, serif;
 }
 button, input, textarea { font: inherit; color: inherit; }
 h1 { font-size: 1.8rem; margin: 0; }
