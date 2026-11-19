@@ -1,9 +1,19 @@
+import { useState } from 'react';
 import { CRAMP_LEVELS, EMPTY_DAY_LOG, FLOW_LEVELS, MOODS, PAINKILLERS, SYMPTOMS } from './cycle.js';
 import { formatLong } from './dates.js';
 import { CrampMark, FlowMark, NoteMark, PainkillerMark, SexMark } from './DayMarks.jsx';
 
+// Judged by the heaviest stretch of the day, from how fast a regular pad or tampon fills.
+const FLOW_GUIDE = {
+  spotting: 'A few drops or brownish discharge, seen when wiping or on a liner. No pad or tampon needed.',
+  light: 'A regular pad or tampon is less than half full after 4 or more hours.',
+  medium: 'A regular pad or tampon is fairly full after about 3 to 4 hours.',
+  heavy: 'A regular pad or tampon fills in about 2 hours or less, you need super size or double up, or you leak.',
+};
+
 export default function DayEditor({ date, dayLog = EMPTY_DAY_LOG, onChange }) {
   const log = { ...EMPTY_DAY_LOG, ...dayLog };
+  const [isFlowGuideShown, setIsFlowGuideShown] = useState(false);
   const update = (changes) => onChange({ ...log, ...changes });
 
   function toggleSymptom(symptom) {
@@ -25,7 +35,17 @@ export default function DayEditor({ date, dayLog = EMPTY_DAY_LOG, onChange }) {
       <h2>{formatLong(date)}</h2>
 
       <fieldset>
-        <legend>Flow</legend>
+        <legend>
+          Flow
+          <button
+            className="guide-toggle"
+            aria-expanded={isFlowGuideShown}
+            aria-label="How to judge flow"
+            onClick={() => setIsFlowGuideShown(!isFlowGuideShown)}
+          >
+            ?
+          </button>
+        </legend>
         <div className="chips">
           {FLOW_LEVELS.map((flow) => (
             <button key={flow} className={`chip ${log.flow === flow ? 'on' : ''}`} onClick={() => update({ flow })}>
@@ -34,6 +54,21 @@ export default function DayEditor({ date, dayLog = EMPTY_DAY_LOG, onChange }) {
             </button>
           ))}
         </div>
+        {isFlowGuideShown && (
+          <div className="flow-guide">
+            <dl>
+              {Object.entries(FLOW_GUIDE).map(([flow, description]) => (
+                <div key={flow}>
+                  <dt>
+                    <FlowMark flow={flow} /> {flow}
+                  </dt>
+                  <dd>{description}</dd>
+                </div>
+              ))}
+            </dl>
+            <p>Log the heaviest part of the day. Soaking through every hour for several hours is worth raising with a doctor.</p>
+          </div>
+        )}
       </fieldset>
 
       <fieldset>

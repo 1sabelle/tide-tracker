@@ -168,3 +168,15 @@ textarea:focus, input:focus, select:focus { outline: 1px solid var(--accent); ba
 .column .tick { height: 1.2em; font-size: 0.7rem; color: var(--muted); }
 .column.is-today .tick { color: var(--text); font-weight: 700; }
 .pregnancy .axis-label { margin: 2px 0 0 34px; font-size: 0.7rem; color: var(--muted); }
+
+.guide-toggle {
+  width: 18px; height: 18px; padding: 0; border: 1px solid var(--border); border-radius: 50%;
+  background: var(--raised); color: var(--muted); font-size: 0.7rem; line-height: 1; cursor: pointer;
+}
+.guide-toggle:hover, .guide-toggle[aria-expanded='true'] { background: var(--hover); color: var(--text); }
+.flow-guide { margin: 10px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--raised); font-size: 0.85rem; }
+.flow-guide dl { margin: 0; }
+.flow-guide dl div { display: grid; grid-template-columns: 90px 1fr; gap: 8px; margin-bottom: 6px; }
+.flow-guide dt { display: flex; align-items: center; gap: 6px; text-transform: capitalize; }
+.flow-guide dd { margin: 0; color: var(--muted); }
+.flow-guide p { margin: 4px 0 0; color: var(--muted); font-size: 0.8rem; }
