@@ -169,6 +169,20 @@ textarea:focus, input:focus, select:focus { outline: 1px solid var(--accent); ba
 .column.is-today .tick { color: var(--text); font-weight: 700; }
 .pregnancy .axis-label { margin: 2px 0 0 34px; font-size: 0.7rem; color: var(--muted); }
 
+.patterns .readout { margin: 0 0 6px; font-size: 0.85rem; color: var(--muted); min-height: 1.2em; }
+.pattern-grid { display: grid; gap: 2px; align-items: center; overflow-x: auto; }
+.pattern-group { grid-column: 1 / -1; margin-top: 8px; font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.pattern-label { padding-right: 10px; font-size: 0.85rem; text-transform: capitalize; white-space: nowrap; }
+.pattern-cell { height: 16px; border-radius: 2px; background: var(--raised); }
+.pattern-cell:hover { outline: 1px solid var(--text); }
+.pattern-tick { font-size: 0.7rem; color: var(--muted); text-align: center; overflow: visible; white-space: nowrap; }
+.pattern-scale { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; margin-top: 6px; font-size: 0.75rem; color: var(--muted); }
+.pattern-scale-key { display: flex; align-items: center; gap: 6px; }
+.pattern-scale-ramp {
+  display: inline-block; width: 60px; height: 10px; border-radius: 2px;
+  background: linear-gradient(to right, color-mix(in srgb, var(--accent) 18%, transparent), var(--accent));
+}
+
 .guide-toggle {
   width: 18px; height: 18px; padding: 0; border: 1px solid var(--border); border-radius: 50%;
   background: var(--raised); color: var(--muted); font-size: 0.7rem; line-height: 1; cursor: pointer;

@@ -7,6 +7,7 @@ import Calendar from './Calendar.jsx';
 import DayEditor from './DayEditor.jsx';
 import History from './History.jsx';
 import PregnancyChance from './PregnancyChance.jsx';
+import Patterns from './Patterns.jsx';
 import Settings from './Settings.jsx';
 
 export default function App() {
@@ -64,6 +65,7 @@ export default function App() {
         selectedDate={selectedDate}
         onSelect={setSelectedDate}
       />
+      <Patterns logs={data.logs} prediction={prediction} today={today} />
       <History logs={data.logs} prediction={prediction} today={today} onAddPastPeriod={addPastPeriod} />
       <Settings data={data} prediction={prediction} onReplace={setData} />
       <footer>
