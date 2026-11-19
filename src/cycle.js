@@ -129,6 +129,11 @@ export function predictCycles(logs, settings, today) {
     ...fertilityFor(periods[i + 1].start, settings.lutealLength),
   }));
 
+  // While a period is ongoing, its expected end comes from the average period length.
+  const ongoingPeriod = isLastPeriodOngoing
+    ? { start: lastPeriod.start, end: addDays(lastPeriod.start, periodLength - 1) }
+    : null;
+
   // No period has been logged since the last one, so the next can start tomorrow at the earliest.
   // While it is due or late, later predictions move along with that.
   const nextPeriodStart = addDays(lastPeriod.start, cycleLength);
@@ -143,7 +148,7 @@ export function predictCycles(logs, settings, today) {
       start,
       nextStartEarliest,
       nextStartLatest: laterOf(addDays(start, longestCycle), nextStartEarliest),
-      predictedPeriod: k === 0 ? null : { start, end: addDays(start, periodLength - 1) },
+      predictedPeriod: k === 0 ? ongoingPeriod : { start, end: addDays(start, periodLength - 1) },
       ...fertilityFor(nextStart, settings.lutealLength),
     });
   }
@@ -155,6 +160,7 @@ export function predictCycles(logs, settings, today) {
     basedOnCycles: recentCycleLengths.length,
     basedOnPeriods: recentPeriodLengths.length,
     cycleDay: daysBetween(lastPeriod.start, today) + 1,
+    ongoingPeriod,
     nextPeriod: {
       start: nextPeriodStart,
       end: addDays(nextPeriodStart, periodLength - 1),

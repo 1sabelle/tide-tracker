@@ -17,7 +17,7 @@ export default function Summary({ prediction, today }) {
       </section>
     );
   }
-  const { cycleDay, nextPeriod, daysUntilNextPeriod, upcomingFertility, cycleLength, periodLength, basedOnCycles } =
+  const { cycleDay, ongoingPeriod, nextPeriod, daysUntilNextPeriod, upcomingFertility, cycleLength, periodLength, basedOnCycles } =
     prediction;
   const isFertileNow =
     upcomingFertility && today >= upcomingFertility.fertileStart && today <= upcomingFertility.fertileEnd;
@@ -28,6 +28,13 @@ export default function Summary({ prediction, today }) {
       <div className="stat">
         <span className="label">Cycle day</span>
         <span className="value">{cycleDay}</span>
+        {ongoingPeriod && (
+          <span className="detail">
+            {ongoingPeriod.end >= today
+              ? `Period expected to end ${formatShort(ongoingPeriod.end)}`
+              : `Period running longer than your usual ${periodLength} days`}
+          </span>
+        )}
       </div>
       <div className="stat period">
         <span className="label">Next period</span>

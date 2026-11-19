@@ -78,6 +78,28 @@ describe('predictCycles', () => {
   });
 });
 
+describe('ongoing period', () => {
+  // Two finished 4-day periods, then a period that started yesterday.
+  const logs = bleeding(
+    '2026-01-01', '2026-01-02', '2026-01-03', '2026-01-04',
+    '2026-01-29', '2026-01-30', '2026-01-31', '2026-02-01',
+    '2026-02-26',
+  );
+
+  it('predicts the rest of a period that is still going', () => {
+    const prediction = predictCycles(logs, DEFAULT_SETTINGS, '2026-02-27');
+    expect(prediction.ongoingPeriod).toEqual({ start: '2026-02-26', end: '2026-03-01' });
+    expect(classifyDay('2026-02-28', prediction).isPredictedPeriod).toBe(true);
+    expect(classifyDay('2026-03-02', prediction).isPredictedPeriod).toBe(false);
+  });
+
+  it('predicts nothing more once the period has ended', () => {
+    const prediction = predictCycles(logs, DEFAULT_SETTINGS, '2026-03-05');
+    expect(prediction.ongoingPeriod).toBeNull();
+    expect(classifyDay('2026-02-28', prediction).isPredictedPeriod).toBe(false);
+  });
+});
+
 describe('late periods', () => {
   it('moves later predictions to tomorrow while a period is late', () => {
     const logs = bleeding('2026-01-01');
