@@ -12,6 +12,9 @@
   --hover: #ffffff1a;
   --period: #e07a7a;
   --period-soft: #e07a7a47;
+  --period-light: #e07a7a26;
+  --period-heavy: #e07a7a8c;
+  --spotting: #e07a7a80;
   --predicted: #e07a7a38;
   --fertile: #8fd0cc2e;
   --ovulation: #8fd0cc;
@@ -49,6 +52,8 @@ section, .settings, .collapsible { background: var(--surface); border: 1px solid
 .stat .label { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
 .stat .value { font-size: 1.2rem; font-weight: 600; }
 .stat .detail { font-size: 0.85rem; color: var(--muted); }
+.stat .phase { display: block; }
+.stat .phase::first-letter { text-transform: uppercase; }
 
 .layout { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; }
 @media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
@@ -66,18 +71,21 @@ section, .settings, .collapsible { background: var(--surface); border: 1px solid
 .day .number { font-size: 0.9rem; }
 .day .marks { display: flex; gap: 3px; align-items: center; height: 10px; font-size: 0.6rem; line-height: 1; }
 .day.is-period { background: var(--period-soft); }
+.day.is-period.flow-light { background: var(--period-light); }
+.day.is-period.flow-heavy { background: var(--period-heavy); }
 .day.is-predicted { background: repeating-linear-gradient(135deg, var(--predicted) 0 4px, transparent 4px 7px); }
 .day.is-fertile { background: var(--fertile); }
 .day.is-ovulation .number { font-weight: 700; color: var(--ovulation); }
 .day.is-ovulation { box-shadow: inset 0 0 0 2px var(--ovulation); }
 .day.is-implantation { outline: 1.5px dashed var(--implantation); outline-offset: -3px; }
 .day.is-today .number { text-decoration: underline; text-underline-offset: 3px; font-weight: 700; }
+.day.flow-spotting { border: 1.5px solid var(--spotting); }
 .day.is-selected { border-color: var(--accent); border-width: 2px; }
 
-.flow-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--period); }
-.flow-spotting { width: 5px; height: 5px; background: transparent; border: 1.5px solid var(--period); }
-.flow-light { opacity: 0.5; }
-.flow-heavy { width: 10px; height: 10px; }
+.flow-swatch { display: inline-block; width: 14px; height: 14px; border-radius: 4px; background: var(--period-soft); }
+.flow-swatch.flow-spotting { background: transparent; border: 1.5px solid var(--spotting); }
+.flow-swatch.flow-light { background: var(--period-light); }
+.flow-swatch.flow-heavy { background: var(--period-heavy); }
 .cramp-mark { color: var(--accent); font-weight: 700; letter-spacing: -1px; }
 .note-mark { width: 5px; height: 5px; border-radius: 50%; background: var(--muted); }
 .painkiller-mark { width: 4px; height: 8px; border-radius: 2px; background: var(--painkiller); }

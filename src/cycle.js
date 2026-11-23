@@ -41,6 +41,8 @@ const FERTILE_DAYS_AFTER_OVULATION = 1;
 // A fertilised egg implants 6-12 days after ovulation. Wilcox, Baird & Weinberg (1999), NEJM 340:1796-9.
 const IMPLANTATION_FIRST_DAY_AFTER_OVULATION = 6;
 const IMPLANTATION_LAST_DAY_AFTER_OVULATION = 12;
+// The ovulatory phase is counted as the predicted ovulation day and one day either side.
+const OVULATORY_DAYS_AROUND_OVULATION = 1;
 
 // Spotting alone does not start or extend a period.
 export function isBleedingDay(dayLog) {
@@ -98,6 +100,17 @@ function fertilityFor(nextPeriodStart, lutealLength) {
     implantationStart: addDays(ovulation, IMPLANTATION_FIRST_DAY_AFTER_OVULATION),
     implantationEnd: addDays(ovulation, IMPLANTATION_LAST_DAY_AFTER_OVULATION),
   };
+}
+
+// Menstrual while the period lasts, follicular until ovulation, ovulatory around it, luteal until the next period.
+// lastDay is the predicted last day of that phase; it is in the past when the period runs long or is late.
+function phaseOn(today, ongoingPeriod, ovulation, nextPeriodStart) {
+  if (ongoingPeriod) return { name: 'menstrual', lastDay: ongoingPeriod.end };
+  const ovulatoryStart = addDays(ovulation, -OVULATORY_DAYS_AROUND_OVULATION);
+  const ovulatoryEnd = addDays(ovulation, OVULATORY_DAYS_AROUND_OVULATION);
+  if (today < ovulatoryStart) return { name: 'follicular', lastDay: addDays(ovulatoryStart, -1) };
+  if (today <= ovulatoryEnd) return { name: 'ovulatory', lastDay: ovulatoryEnd };
+  return { name: 'luteal', lastDay: addDays(nextPeriodStart, -1) };
 }
 
 export function predictCycles(logs, settings, today) {
@@ -160,6 +173,7 @@ export function predictCycles(logs, settings, today) {
     basedOnCycles: recentCycleLengths.length,
     basedOnPeriods: recentPeriodLengths.length,
     cycleDay: daysBetween(lastPeriod.start, today) + 1,
+    phase: phaseOn(today, ongoingPeriod, futureCycles[0].ovulation, nextPeriodStart),
     ongoingPeriod,
     nextPeriod: {
       start: nextPeriodStart,

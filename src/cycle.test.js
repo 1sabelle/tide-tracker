@@ -112,6 +112,40 @@ describe('late periods', () => {
   });
 });
 
+describe('phase', () => {
+  // One period on 2026-01-01, so ovulation is predicted on 2026-01-15.
+  const logs = bleeding('2026-01-01', '2026-01-02', '2026-01-03');
+  const phaseOn = (today) => predictCycles(logs, DEFAULT_SETTINGS, today).phase.name;
+  const lastDayOfPhaseOn = (today) => predictCycles(logs, DEFAULT_SETTINGS, today).phase.lastDay;
+
+  it('is menstrual while the period is ongoing', () => {
+    expect(phaseOn('2026-01-03')).toBe('menstrual');
+  });
+
+  it('is follicular between the period and ovulation', () => {
+    expect(phaseOn('2026-01-05')).toBe('follicular');
+    expect(phaseOn('2026-01-13')).toBe('follicular');
+  });
+
+  it('is ovulatory from the day before to the day after ovulation', () => {
+    expect(phaseOn('2026-01-14')).toBe('ovulatory');
+    expect(phaseOn('2026-01-16')).toBe('ovulatory');
+  });
+
+  it('is luteal after ovulation, also while the next period is late', () => {
+    expect(phaseOn('2026-01-17')).toBe('luteal');
+    expect(phaseOn('2026-02-02')).toBe('luteal');
+  });
+
+  it('predicts the last day of each phase', () => {
+    // With no finished period yet, the period length is the 5-day default.
+    expect(lastDayOfPhaseOn('2026-01-03')).toBe('2026-01-05');
+    expect(lastDayOfPhaseOn('2026-01-05')).toBe('2026-01-13');
+    expect(lastDayOfPhaseOn('2026-01-14')).toBe('2026-01-16');
+    expect(lastDayOfPhaseOn('2026-01-17')).toBe('2026-01-28');
+  });
+});
+
 describe('logPastPeriod', () => {
   it('fills the range and keeps what was already logged', () => {
     const logs = {

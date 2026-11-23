@@ -37,6 +37,7 @@ export default function Calendar({ logs, prediction, today, selectedDate, onSele
         {dates.map((date) => {
           const dayLog = logs[date];
           const day = classifyDay(date, prediction);
+          const hasFlow = dayLog?.flow && dayLog.flow !== 'none';
           const classes = [
             'day',
             day.isPeriod && 'is-period',
@@ -44,6 +45,7 @@ export default function Calendar({ logs, prediction, today, selectedDate, onSele
             !day.isPeriod && day.isFertile && 'is-fertile',
             day.isOvulation && 'is-ovulation',
             day.isImplantation && 'is-implantation',
+            hasFlow && `flow-${dayLog.flow}`,
             date === today && 'is-today',
             date === selectedDate && 'is-selected',
           ].filter(Boolean);
@@ -51,7 +53,6 @@ export default function Calendar({ logs, prediction, today, selectedDate, onSele
             <button key={date} className={classes.join(' ')} onClick={() => onSelect(date)}>
               <span className="number">{Number(date.slice(8))}</span>
               <span className="marks">
-                {dayLog?.flow && dayLog.flow !== 'none' && <FlowMark flow={dayLog.flow} />}
                 {dayLog?.cramps > 0 && <CrampMark cramps={dayLog.cramps} />}
                 {(dayLog?.symptoms?.length > 0 || dayLog?.notes) && <NoteMark />}
                 {dayLog?.painkillers?.length > 0 && <PainkillerMark />}
@@ -63,6 +64,7 @@ export default function Calendar({ logs, prediction, today, selectedDate, onSele
       </div>
       <div className="legend">
         <span><i className="swatch is-period" /> Period</span>
+        <span><FlowMark flow="spotting" /> Spotting</span>
         <span><i className="swatch is-predicted" /> Predicted period</span>
         <span><i className="swatch is-fertile" /> Fertile window</span>
         <span><i className="swatch is-ovulation" /> Ovulation</span>
