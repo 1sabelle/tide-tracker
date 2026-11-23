@@ -15,6 +15,8 @@ export const SYMPTOMS = [
 ];
 export const PAINKILLERS = ['ibuprofen', 'paracetamol'];
 export const MOODS = ['happy', 'calm', 'sensitive', 'irritable', 'low', 'anxious'];
+// Only a noticeably low or high day is logged; nothing logged means nothing stood out.
+export const LIBIDO_LEVELS = ['low', 'high'];
 
 export const EMPTY_DAY_LOG = {
   flow: 'none',
@@ -22,6 +24,7 @@ export const EMPTY_DAY_LOG = {
   symptoms: [],
   painkillers: [],
   mood: null,
+  libido: null,
   notes: '',
   unprotectedSex: false,
 };
@@ -224,6 +227,7 @@ export function isEmptyLog(dayLog) {
     (dayLog.symptoms ?? []).length === 0 &&
     (dayLog.painkillers ?? []).length === 0 &&
     !dayLog.mood &&
+    !dayLog.libido &&
     !dayLog.unprotectedSex &&
     !(dayLog.notes ?? '').trim()
   );

@@ -1,4 +1,4 @@
-import { CRAMP_LEVELS, DEFAULT_SETTINGS, FLOW_LEVELS, MOODS, PAINKILLERS, SYMPTOMS } from './cycle.js';
+import { CRAMP_LEVELS, DEFAULT_SETTINGS, FLOW_LEVELS, LIBIDO_LEVELS, MOODS, PAINKILLERS, SYMPTOMS } from './cycle.js';
 import { isIsoDate } from './dates.js';
 
 const STORAGE_KEY = 'mtracker.v1';
@@ -99,6 +99,8 @@ function collectDayLogErrors(date, dayLog) {
   }
   if (dayLog.mood !== undefined && dayLog.mood !== null && !MOODS.includes(dayLog.mood))
     errors.push(`${date}: mood "${dayLog.mood}" is not one of ${MOODS.join(', ')}.`);
+  if (dayLog.libido !== undefined && dayLog.libido !== null && !LIBIDO_LEVELS.includes(dayLog.libido))
+    errors.push(`${date}: libido "${dayLog.libido}" is not one of ${LIBIDO_LEVELS.join(', ')}.`);
   if (dayLog.unprotectedSex !== undefined && typeof dayLog.unprotectedSex !== 'boolean')
     errors.push(`${date}: unprotectedSex "${dayLog.unprotectedSex}" is not true or false.`);
   if (dayLog.notes !== undefined && typeof dayLog.notes !== 'string')
@@ -113,6 +115,7 @@ function normalizeDayLog(dayLog) {
     symptoms: dayLog.symptoms ?? [],
     painkillers: dayLog.painkillers ?? [],
     mood: dayLog.mood ?? null,
+    libido: dayLog.libido ?? null,
     notes: dayLog.notes ?? '',
     unprotectedSex: dayLog.unprotectedSex ?? false,
   };

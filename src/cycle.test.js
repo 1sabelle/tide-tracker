@@ -177,6 +177,13 @@ describe('parseData', () => {
     expect(data.logs['2026-01-01'].mood).toBe('low');
   });
 
+  it('keeps logged libido and reports unknown levels', () => {
+    const { data, errors } = parseData({ logs: { '2026-01-01': { libido: 'high' }, '2026-01-02': { libido: 'medium' } } });
+    expect(data.logs['2026-01-01'].libido).toBe('high');
+    expect(data.logs['2026-01-02']).toBeUndefined();
+    expect(errors).toEqual(['2026-01-02: libido "medium" is not one of low, high.']);
+  });
+
   it('reports every invalid entry and keeps the valid ones', () => {
     const { data, errors } = parseData({
       logs: {

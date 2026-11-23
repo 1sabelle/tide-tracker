@@ -1,4 +1,4 @@
-import { MOODS, PAINKILLERS, SYMPTOMS } from './cycle.js';
+import { LIBIDO_LEVELS, MOODS, PAINKILLERS, SYMPTOMS } from './cycle.js';
 import { addDays, daysBetween } from './dates.js';
 
 // Each thing the patterns view tracks, and how to tell whether a day's log has it.
@@ -15,6 +15,7 @@ const TRACKED = [
     isLoggedIn: (dayLog) => dayLog.painkillers?.includes(painkiller),
   })),
   ...MOODS.map((mood) => ({ group: 'Mood', label: mood, isLoggedIn: (dayLog) => dayLog.mood === mood })),
+  ...LIBIDO_LEVELS.map((libido) => ({ group: 'Libido', label: libido, isLoggedIn: (dayLog) => dayLog.libido === libido })),
 ];
 
 function earlierOf(isoDateA, isoDateB) {

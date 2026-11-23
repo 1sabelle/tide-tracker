@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CRAMP_LEVELS, EMPTY_DAY_LOG, FLOW_LEVELS, MOODS, PAINKILLERS, SYMPTOMS } from './cycle.js';
+import { CRAMP_LEVELS, EMPTY_DAY_LOG, FLOW_LEVELS, LIBIDO_LEVELS, MOODS, PAINKILLERS, SYMPTOMS } from './cycle.js';
 import { formatLong } from './dates.js';
 import { CrampMark, FlowMark, NoteMark, PainkillerMark, SexMark } from './DayMarks.jsx';
 
@@ -129,8 +129,18 @@ export default function DayEditor({ date, dayLog = EMPTY_DAY_LOG, onChange }) {
       </fieldset>
 
       <fieldset>
-        <legend>Sex</legend>
+        <legend>Sex and libido</legend>
         <div className="chips">
+          {LIBIDO_LEVELS.map((libido) => (
+            <button
+              key={libido}
+              className={`chip ${log.libido === libido ? 'on' : ''}`}
+              aria-pressed={log.libido === libido}
+              onClick={() => update({ libido: log.libido === libido ? null : libido })}
+            >
+              {libido} libido
+            </button>
+          ))}
           <button
             className={`chip ${log.unprotectedSex ? 'on' : ''}`}
             aria-pressed={log.unprotectedSex}
