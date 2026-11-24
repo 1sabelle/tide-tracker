@@ -21,6 +21,7 @@
   --implantation: #b3a6e6;
   --painkiller: #86b8e0;
   --warning: #e68aae;
+  --cream: #eae0cf;
   color-scheme: dark;
 }
 
@@ -203,3 +204,21 @@ textarea:focus, input:focus, select:focus { outline: 1px solid var(--accent); ba
 .flow-guide dt { display: flex; align-items: center; gap: 6px; text-transform: capitalize; }
 .flow-guide dd { margin: 0; color: var(--muted); }
 .flow-guide p { margin: 4px 0 0; color: var(--muted); font-size: 0.8rem; }
+
+.starfield { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+.star {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--cream);
+  opacity: var(--star-opacity);
+  animation-name: twinkle;
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: calc(var(--star-opacity) * 0.3); transform: scale(0.8); }
+  50% { opacity: var(--star-opacity); transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .star { animation: none; }
+}

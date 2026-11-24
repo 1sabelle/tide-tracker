@@ -9,6 +9,7 @@ import History from './History.jsx';
 import PregnancyChance from './PregnancyChance.jsx';
 import Patterns from './Patterns.jsx';
 import Settings from './Settings.jsx';
+import Starfield from './Starfield.jsx';
 
 export default function App() {
   const [data, setData] = useState(loadData);
@@ -37,6 +38,7 @@ export default function App() {
 
   return (
     <div className="app">
+      <Starfield />
       <header>
         <h1>Tide</h1>
         {saveFailed && <p className="warning">Could not save to browser storage. Export your data to keep it.</p>}
