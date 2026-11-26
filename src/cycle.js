@@ -1,4 +1,5 @@
 import { addDays, daysBetween } from './dates.js';
+import { findSurgeStarts, isPlausibleLutealLength, ovulationAfterSurge } from './ovulation.js';
 
 export const FLOW_LEVELS = ['none', 'spotting', 'light', 'medium', 'heavy'];
 export const CRAMP_LEVELS = ['none', 'mild', 'moderate', 'severe'];
@@ -41,6 +42,8 @@ export const DEFAULT_SETTINGS = {
 // One unlogged day inside a period (gap of 2 between bleeding days) still counts as the same period.
 const MAX_GAP_WITHIN_PERIOD = 2;
 const RECENT_CYCLES_USED = 6;
+// Luteal length is learned from ovulation tests once this many completed cycles have measured it.
+const MIN_CYCLES_FOR_MEASURED_LUTEAL_LENGTH = 2;
 const PREDICTED_CYCLES = 3;
 const FERTILE_DAYS_BEFORE_OVULATION = 5;
 const FERTILE_DAYS_AFTER_OVULATION = 1;
@@ -97,9 +100,15 @@ function laterOf(isoDateA, isoDateB) {
   return isoDateA > isoDateB ? isoDateA : isoDateB;
 }
 
-function fertilityFor(nextPeriodStart, lutealLength) {
-  const ovulation = addDays(nextPeriodStart, -lutealLength);
+// A cycle's ovulation comes from its ovulation tests when they show exactly one surge.
+// With no surge, or several that leave it unclear which one led to ovulation, it is counted back from the next period.
+function fertilityFor(surgeStarts, nextPeriodStart, lutealLength) {
+  const hasClearSurge = surgeStarts.length === 1;
+  const surgeStart = hasClearSurge ? surgeStarts[0] : null;
+  const ovulation = hasClearSurge ? ovulationAfterSurge(surgeStart) : addDays(nextPeriodStart, -lutealLength);
   return {
+    surgeStart,
+    hasSeveralSurges: surgeStarts.length > 1,
     ovulation,
     fertileStart: addDays(ovulation, -FERTILE_DAYS_BEFORE_OVULATION),
     fertileEnd: addDays(ovulation, FERTILE_DAYS_AFTER_OVULATION),
@@ -140,12 +149,31 @@ export function predictCycles(logs, settings, today) {
   const shortestCycle = hasCycleHistory ? Math.min(...recentCycleLengths) : cycleLength;
   const longestCycle = hasCycleHistory ? Math.max(...recentCycleLengths) : cycleLength;
 
-  const pastCycles = periods.slice(0, -1).map((period, i) => ({
-    start: period.start,
-    nextStartEarliest: periods[i + 1].start,
-    nextStartLatest: periods[i + 1].start,
+  const completedCycles = periods.slice(0, -1).map((period, i) => {
+    const nextStart = periods[i + 1].start;
+    const surgeStarts = findSurgeStarts(logs, period.start, nextStart);
+    const canMeasureLutealLength = surgeStarts.length === 1 && isPlausibleCycleLength(daysBetween(period.start, nextStart));
+    return {
+      start: period.start,
+      nextStart,
+      surgeStarts,
+      measuredLutealLength: canMeasureLutealLength ? daysBetween(ovulationAfterSurge(surgeStarts[0]), nextStart) : null,
+    };
+  });
+  const measuredLutealLengths = completedCycles
+    .map((cycle) => cycle.measuredLutealLength)
+    .filter((days) => days !== null && isPlausibleLutealLength(days))
+    .slice(-RECENT_CYCLES_USED);
+  const isLutealLengthMeasured = measuredLutealLengths.length >= MIN_CYCLES_FOR_MEASURED_LUTEAL_LENGTH;
+  const lutealLength = isLutealLengthMeasured ? averageRounded(measuredLutealLengths) : settings.lutealLength;
+
+  const pastCycles = completedCycles.map((cycle) => ({
+    start: cycle.start,
+    nextStartEarliest: cycle.nextStart,
+    nextStartLatest: cycle.nextStart,
     predictedPeriod: null,
-    ...fertilityFor(periods[i + 1].start, settings.lutealLength),
+    measuredLutealLength: cycle.measuredLutealLength,
+    ...fertilityFor(cycle.surgeStarts, cycle.nextStart, lutealLength),
   }));
 
   // While a period is ongoing, its expected end comes from the average period length.
@@ -168,7 +196,8 @@ export function predictCycles(logs, settings, today) {
       nextStartEarliest,
       nextStartLatest: laterOf(addDays(start, longestCycle), nextStartEarliest),
       predictedPeriod: k === 0 ? ongoingPeriod : { start, end: addDays(start, periodLength - 1) },
-      ...fertilityFor(nextStart, settings.lutealLength),
+      measuredLutealLength: null,
+      ...fertilityFor(findSurgeStarts(logs, start, nextStart), nextStart, lutealLength),
     });
   }
 
@@ -178,6 +207,9 @@ export function predictCycles(logs, settings, today) {
     periodLength,
     basedOnCycles: recentCycleLengths.length,
     basedOnPeriods: recentPeriodLengths.length,
+    lutealLength,
+    isLutealLengthMeasured,
+    measuredLutealLengths,
     cycleDay: daysBetween(lastPeriod.start, today) + 1,
     phase: phaseOn(today, ongoingPeriod, futureCycles[0].ovulation, nextPeriodStart),
     ongoingPeriod,

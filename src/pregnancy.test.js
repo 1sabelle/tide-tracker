@@ -24,4 +24,9 @@ describe('possibleOvulationDates', () => {
     expect(dates[0]).toBe('2026-01-11');
     expect(dates.at(-1)).toBe('2026-01-17');
   });
+
+  it('is the one or two days after a clear surge in ovulation tests', () => {
+    const dates = possibleOvulationDates({ surgeStart: '2026-01-18', nextStartEarliest: '2026-01-27', nextStartLatest: '2026-01-29' }, 14);
+    expect(dates).toEqual(['2026-01-19', '2026-01-20']);
+  });
 });

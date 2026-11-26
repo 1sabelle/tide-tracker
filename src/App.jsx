@@ -69,7 +69,6 @@ export default function App() {
       <PregnancyChance
         logs={data.logs}
         prediction={prediction}
-        lutealLength={data.settings.lutealLength}
         today={today}
         selectedDate={selectedDate}
         onSelect={setSelectedDate}
@@ -78,8 +77,9 @@ export default function App() {
       <History logs={data.logs} prediction={prediction} today={today} onAddPastPeriod={addPastPeriod} />
       <Settings data={data} prediction={prediction} onReplace={setData} />
       <footer>
-        Predictions are calendar estimates (ovulation about {data.settings.lutealLength} days before the next
-        period). They are not reliable for contraception.
+        Predictions are estimates (ovulation the day after a positive ovulation test, otherwise about{' '}
+        {prediction?.lutealLength ?? data.settings.lutealLength} days before the next period). They are not reliable for
+        contraception.
       </footer>
     </div>
   );

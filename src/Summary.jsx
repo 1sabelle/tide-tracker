@@ -65,7 +65,16 @@ export default function Summary({ prediction, today }) {
           <span className="value">
             {formatShort(upcomingFertility.fertileStart)} to {formatShort(upcomingFertility.fertileEnd)}
           </span>
-          <span className="detail">Ovulation around {formatShort(upcomingFertility.ovulation)}</span>
+          <span className="detail">
+            Ovulation around {formatShort(upcomingFertility.ovulation)}
+            {upcomingFertility.surgeStart && ', from your positive test'}
+            {upcomingFertility.hasSeveralSurges && (
+              <>
+                <br />
+                positive tests on separate days, so this is a calendar estimate
+              </>
+            )}
+          </span>
         </div>
       )}
       <div className="stat">

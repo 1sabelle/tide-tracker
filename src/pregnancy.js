@@ -1,4 +1,5 @@
 import { addDays, daysBetween } from './dates.js';
+import { likelyOvulationDatesAfterSurge } from './ovulation.js';
 
 // Chance of conception from unprotected sex on one day, indexed by days before ovulation (0 = ovulation day).
 // Wilcox, Weinberg & Baird (1995), NEJM 333:1517-21. No pregnancies followed sex after the ovulation day.
@@ -10,8 +11,10 @@ function singleDayChance(sexDate, ovulationDate) {
   return CONCEPTION_CHANCE_BY_DAYS_BEFORE_OVULATION[daysBetween(sexDate, ovulationDate)] ?? 0;
 }
 
-// Every day ovulation could plausibly fall on in this cycle, given how uncertain the next period start is.
+// Every day ovulation could plausibly fall on in this cycle: shortly after a clear surge in its ovulation tests,
+// otherwise anywhere the uncertain next period start allows.
 export function possibleOvulationDates(cycle, lutealLength) {
+  if (cycle.surgeStart) return likelyOvulationDatesAfterSurge(cycle.surgeStart);
   const first = addDays(cycle.nextStartEarliest, -lutealLength - LUTEAL_VARIATION_DAYS);
   const last = addDays(cycle.nextStartLatest, -lutealLength + LUTEAL_VARIATION_DAYS);
   const dates = [];

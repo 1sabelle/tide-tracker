@@ -1,5 +1,6 @@
 import { CRAMP_LEVELS, measureCycles } from './cycle.js';
 import { addDays, daysBetween, formatShort } from './dates.js';
+import { isPlausibleLutealLength } from './ovulation.js';
 import PastPeriodForm from './PastPeriodForm.jsx';
 
 function strongestCrampsDuring(period, logs) {
@@ -18,11 +19,20 @@ function heavyDaysDuring(period, logs) {
   return heavyDays;
 }
 
+function describeLutealPhase(cycle) {
+  if (!cycle) return '';
+  if (cycle.hasSeveralSurges) return 'unclear (several surges)';
+  if (cycle.measuredLutealLength === null) return '';
+  const days = `${cycle.measuredLutealLength} days`;
+  return isPlausibleLutealLength(cycle.measuredLutealLength) ? days : `${days} (ignored)`;
+}
+
 export default function History({ logs, prediction, today, onAddPastPeriod }) {
   const periods = prediction?.periods ?? [];
   const cycleLengthByStart = Object.fromEntries(
     measureCycles(periods).map((cycle) => [cycle.start, cycle.length]),
   );
+  const cycleByStart = Object.fromEntries((prediction?.cycles ?? []).map((cycle) => [cycle.start, cycle]));
   const newestFirstPeriods = [...periods].reverse();
 
   return (
@@ -36,6 +46,7 @@ export default function History({ logs, prediction, today, onAddPastPeriod }) {
               <th>Started</th>
               <th>Period</th>
               <th>Cycle</th>
+              <th>Luteal phase</th>
               <th>Heavy days</th>
               <th>Worst cramps</th>
             </tr>
@@ -46,6 +57,7 @@ export default function History({ logs, prediction, today, onAddPastPeriod }) {
                 <td>{formatShort(period.start)}</td>
                 <td>{daysBetween(period.start, period.end) + 1} days</td>
                 <td>{cycleLengthByStart[period.start] ? `${cycleLengthByStart[period.start]} days` : 'current'}</td>
+                <td>{describeLutealPhase(cycleByStart[period.start])}</td>
                 <td>{heavyDaysDuring(period, logs)}</td>
                 <td>{CRAMP_LEVELS[strongestCrampsDuring(period, logs)]}</td>
               </tr>

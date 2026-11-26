@@ -25,8 +25,18 @@ function describeSettingUse(prediction) {
       basedOnPeriods > 0
         ? { isOverridden: true, text: `Not used: your logs give ${plural(prediction.periodLength, 'day')}, averaged over ${plural(basedOnPeriods, 'period')}.` }
         : { isOverridden: false, text: 'In use until a finished period is logged.' },
-    lutealLength: { isOverridden: false, text: 'Always in use: ovulation cannot be measured from period dates.' },
+    lutealLength: describeLutealLengthUse(prediction),
   };
+}
+
+// Luteal length is measured from cycles with a positive ovulation test followed by a logged period.
+function describeLutealLengthUse(prediction) {
+  const measured = prediction?.measuredLutealLengths ?? [];
+  if (prediction?.isLutealLengthMeasured)
+    return { isOverridden: true, text: `Not used: your ovulation tests give ${plural(prediction.lutealLength, 'day')}, averaged over ${plural(measured.length, 'cycle')}.` };
+  if (measured.length === 1)
+    return { isOverridden: false, text: `In use: your ovulation tests measured ${plural(measured[0], 'day')} in 1 cycle. One more measured cycle replaces this.` };
+  return { isOverridden: false, text: 'In use until two cycles each have a positive ovulation test followed by a logged period.' };
 }
 
 export default function Settings({ data, prediction, onReplace }) {

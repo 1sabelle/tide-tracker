@@ -146,6 +146,51 @@ describe('phase', () => {
   });
 });
 
+describe('ovulation tests', () => {
+  const positive = { ovulationTest: 'positive' };
+  const negative = { ovulationTest: 'negative' };
+
+  it('places ovulation the day after the first positive test of this cycle', () => {
+    // The calendar estimate would be 2026-01-15.
+    const logs = { ...bleeding('2026-01-01'), '2026-01-18': negative, '2026-01-19': positive, '2026-01-20': positive };
+    const prediction = predictCycles(logs, DEFAULT_SETTINGS, '2026-01-20');
+    const cycle = findCycleContaining('2026-01-20', prediction);
+    expect(cycle).toMatchObject({ surgeStart: '2026-01-19', ovulation: '2026-01-20', fertileStart: '2026-01-15', fertileEnd: '2026-01-21' });
+    expect(prediction.phase.name).toBe('ovulatory');
+  });
+
+  it('keeps the calendar estimate when the tests show several surges', () => {
+    const logs = { ...bleeding('2026-01-01'), '2026-01-10': positive, '2026-01-11': negative, '2026-01-19': positive };
+    const cycle = findCycleContaining('2026-01-19', predictCycles(logs, DEFAULT_SETTINGS, '2026-01-20'));
+    expect(cycle).toMatchObject({ surgeStart: null, hasSeveralSurges: true, ovulation: '2026-01-15' });
+  });
+
+  it('keeps the default luteal length after only one measured cycle', () => {
+    // Surge 2026-01-16, ovulation 2026-01-17, next period 2026-01-29: a 12-day luteal phase.
+    const logs = { ...bleeding('2026-01-01', '2026-01-29'), '2026-01-16': positive };
+    const prediction = predictCycles(logs, DEFAULT_SETTINGS, '2026-02-05');
+    expect(prediction.measuredLutealLengths).toEqual([12]);
+    expect(prediction.isLutealLengthMeasured).toBe(false);
+    expect(prediction.lutealLength).toBe(14);
+  });
+
+  it('learns luteal length from two measured cycles and predicts later ovulation with it', () => {
+    const logs = { ...bleeding('2026-01-01', '2026-01-29', '2026-02-26'), '2026-01-16': positive, '2026-02-13': positive };
+    const prediction = predictCycles(logs, DEFAULT_SETTINGS, '2026-03-01');
+    expect(prediction.lutealLength).toBe(12);
+    // Next period 2026-03-26, so ovulation 12 days before it.
+    expect(findCycleContaining('2026-03-01', prediction).ovulation).toBe('2026-03-14');
+  });
+
+  it('does not learn from implausible luteal phases', () => {
+    // Surges two days before each period: a 1-day luteal phase, more likely a missed log than real.
+    const logs = { ...bleeding('2026-01-01', '2026-01-29', '2026-02-26'), '2026-01-27': positive, '2026-02-24': positive };
+    const prediction = predictCycles(logs, DEFAULT_SETTINGS, '2026-03-01');
+    expect(prediction.measuredLutealLengths).toEqual([]);
+    expect(prediction.lutealLength).toBe(14);
+  });
+});
+
 describe('logPastPeriod', () => {
   it('fills the range and keeps what was already logged', () => {
     const logs = {

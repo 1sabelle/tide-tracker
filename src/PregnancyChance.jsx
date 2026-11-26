@@ -18,13 +18,13 @@ function cycleDatesOf(cycle) {
   return dates;
 }
 
-export default function PregnancyChance({ logs, prediction, lutealLength, today, selectedDate, onSelect }) {
+export default function PregnancyChance({ logs, prediction, today, selectedDate, onSelect }) {
   const [hoveredDate, setHoveredDate] = useState(null);
   const cycle = findCycleContaining(selectedDate, prediction);
   if (!cycle || cycle.start > today) return null;
 
   const cycleDates = cycleDatesOf(cycle);
-  const ovulationDates = possibleOvulationDates(cycle, lutealLength);
+  const ovulationDates = possibleOvulationDates(cycle, prediction.lutealLength);
   const sexDates = cycleDates.filter((date) => logs[date]?.unprotectedSex);
   const cycleChance = conceptionChance(sexDates, ovulationDates);
   const isCompletedCycle = cycle.nextStartEarliest === cycle.nextStartLatest && cycle.nextStartLatest <= today;
