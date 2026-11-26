@@ -56,8 +56,23 @@ section, .settings, .collapsible { background: var(--surface); border: 1px solid
 .stat .phase { display: block; }
 .stat .phase::first-letter { text-transform: uppercase; }
 
-.layout { display: grid; grid-template-columns: 1.3fr 1fr; gap: 16px; }
-@media (max-width: 760px) { .layout { grid-template-columns: 1fr; } }
+.layout {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: 'calendar editor' 'notes editor';
+  gap: 16px;
+}
+.layout .calendar { grid-area: calendar; }
+.layout .editor { grid-area: editor; }
+.layout .day-notes { grid-area: notes; }
+@media (max-width: 760px) {
+  .layout { grid-template-columns: 1fr; grid-template-rows: none; grid-template-areas: 'calendar' 'editor' 'notes'; }
+}
+/* The notes box grows to fill whatever height the day editor leaves beside it. */
+.day-notes { display: flex; flex-direction: column; gap: 6px; }
+.day-notes label { display: flex; align-items: center; gap: 6px; font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.day-notes textarea { flex: 1; min-height: 80px; }
 
 .calendar-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
 .calendar-nav h2 { margin: 0; }

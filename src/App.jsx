@@ -5,6 +5,7 @@ import { loadData, saveData } from './storage.js';
 import Summary from './Summary.jsx';
 import Calendar from './Calendar.jsx';
 import DayEditor from './DayEditor.jsx';
+import DayNotes from './DayNotes.jsx';
 import History from './History.jsx';
 import PregnancyChance from './PregnancyChance.jsx';
 import Patterns from './Patterns.jsx';
@@ -54,6 +55,12 @@ export default function App() {
         />
         <DayEditor
           key={selectedDate}
+          date={selectedDate}
+          dayLog={data.logs[selectedDate]}
+          onChange={(dayLog) => updateDayLog(selectedDate, dayLog)}
+        />
+        <DayNotes
+          key={`notes-${selectedDate}`}
           date={selectedDate}
           dayLog={data.logs[selectedDate]}
           onChange={(dayLog) => updateDayLog(selectedDate, dayLog)}

@@ -167,11 +167,6 @@ export default function DayEditor({ date, dayLog = EMPTY_DAY_LOG, onChange }) {
           </button>
         </div>
       </fieldset>
-
-      <fieldset>
-        <legend>Notes <NoteMark /></legend>
-        <textarea rows={3} value={log.notes} onChange={(e) => update({ notes: e.target.value })} />
-      </fieldset>
     </section>
   );
 }
