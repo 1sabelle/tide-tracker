@@ -41,7 +41,9 @@ export default function App() {
     <div className="app">
       <Starfield />
       <header>
-        <h1>Tide</h1>
+        <h1>
+          <img className="wordmark" src="/tide-wordmark.svg" alt="Tide" width={83} height={40} />
+        </h1>
         {saveFailed && <p className="warning">Could not save to browser storage. Export your data to keep it.</p>}
       </header>
       <Summary prediction={prediction} today={today} />
