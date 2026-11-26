@@ -1,7 +1,6 @@
 import { addDays } from './dates.js';
 
-// Ovulation usually follows the first positive urine LH test within about 1 to 2 days.
-// The earlier day is used as the single best estimate.
+// Ovulation usually follows the first positive urine LH test within about 1 to 2 days, so both days count as possible.
 const LIKELY_OVULATION_DAYS_AFTER_SURGE_START = [1, 2];
 // A luteal phase outside this range more likely comes from a misread surge or a missed period log than from a real
 // measurement, so it is not learned from.
@@ -19,10 +18,6 @@ export function findSurgeStarts(logs, start, end) {
     if (result) isInSurge = result === 'positive';
   }
   return surgeStarts;
-}
-
-export function ovulationAfterSurge(surgeStart) {
-  return addDays(surgeStart, LIKELY_OVULATION_DAYS_AFTER_SURGE_START[0]);
 }
 
 export function likelyOvulationDatesAfterSurge(surgeStart) {

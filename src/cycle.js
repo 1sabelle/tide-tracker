@@ -1,5 +1,5 @@
 import { addDays, daysBetween } from './dates.js';
-import { findSurgeStarts, isPlausibleLutealLength, ovulationAfterSurge } from './ovulation.js';
+import { findSurgeStarts, isPlausibleLutealLength, likelyOvulationDatesAfterSurge } from './ovulation.js';
 
 export const FLOW_LEVELS = ['none', 'spotting', 'light', 'medium', 'heavy'];
 export const CRAMP_LEVELS = ['none', 'mild', 'moderate', 'severe'];
@@ -50,7 +50,7 @@ const FERTILE_DAYS_AFTER_OVULATION = 1;
 // A fertilised egg implants 6-12 days after ovulation. Wilcox, Baird & Weinberg (1999), NEJM 340:1796-9.
 const IMPLANTATION_FIRST_DAY_AFTER_OVULATION = 6;
 const IMPLANTATION_LAST_DAY_AFTER_OVULATION = 12;
-// The ovulatory phase is counted as the predicted ovulation day and one day either side.
+// The ovulatory phase is counted as the possible ovulation days and one day either side.
 const OVULATORY_DAYS_AROUND_OVULATION = 1;
 
 // Spotting alone does not start or extend a period.
@@ -100,29 +100,39 @@ function laterOf(isoDateA, isoDateB) {
   return isoDateA > isoDateB ? isoDateA : isoDateB;
 }
 
-// A cycle's ovulation comes from its ovulation tests when they show exactly one surge.
-// With no surge, or several that leave it unclear which one led to ovulation, it is counted back from the next period.
+// The days a cycle's ovulation may fall on: shortly after the surge when its ovulation tests show exactly one.
+// With no surge, or several that leave it unclear which one led to ovulation, it is one day counted back from the
+// next period.
+function possibleOvulationDays(surgeStarts, nextPeriodStart, lutealLength) {
+  if (surgeStarts.length === 1) {
+    const likelyDates = likelyOvulationDatesAfterSurge(surgeStarts[0]);
+    return { ovulationEarliest: likelyDates[0], ovulationLatest: likelyDates.at(-1) };
+  }
+  const ovulation = addDays(nextPeriodStart, -lutealLength);
+  return { ovulationEarliest: ovulation, ovulationLatest: ovulation };
+}
+
+// The fertile and implantation windows cover every possible ovulation day.
 function fertilityFor(surgeStarts, nextPeriodStart, lutealLength) {
-  const hasClearSurge = surgeStarts.length === 1;
-  const surgeStart = hasClearSurge ? surgeStarts[0] : null;
-  const ovulation = hasClearSurge ? ovulationAfterSurge(surgeStart) : addDays(nextPeriodStart, -lutealLength);
+  const { ovulationEarliest, ovulationLatest } = possibleOvulationDays(surgeStarts, nextPeriodStart, lutealLength);
   return {
-    surgeStart,
+    surgeStart: surgeStarts.length === 1 ? surgeStarts[0] : null,
     hasSeveralSurges: surgeStarts.length > 1,
-    ovulation,
-    fertileStart: addDays(ovulation, -FERTILE_DAYS_BEFORE_OVULATION),
-    fertileEnd: addDays(ovulation, FERTILE_DAYS_AFTER_OVULATION),
-    implantationStart: addDays(ovulation, IMPLANTATION_FIRST_DAY_AFTER_OVULATION),
-    implantationEnd: addDays(ovulation, IMPLANTATION_LAST_DAY_AFTER_OVULATION),
+    ovulationEarliest,
+    ovulationLatest,
+    fertileStart: addDays(ovulationEarliest, -FERTILE_DAYS_BEFORE_OVULATION),
+    fertileEnd: addDays(ovulationLatest, FERTILE_DAYS_AFTER_OVULATION),
+    implantationStart: addDays(ovulationEarliest, IMPLANTATION_FIRST_DAY_AFTER_OVULATION),
+    implantationEnd: addDays(ovulationLatest, IMPLANTATION_LAST_DAY_AFTER_OVULATION),
   };
 }
 
 // Menstrual while the period lasts, follicular until ovulation, ovulatory around it, luteal until the next period.
 // lastDay is the predicted last day of that phase; it is in the past when the period runs long or is late.
-function phaseOn(today, ongoingPeriod, ovulation, nextPeriodStart) {
+function phaseOn(today, ongoingPeriod, cycle, nextPeriodStart) {
   if (ongoingPeriod) return { name: 'menstrual', lastDay: ongoingPeriod.end };
-  const ovulatoryStart = addDays(ovulation, -OVULATORY_DAYS_AROUND_OVULATION);
-  const ovulatoryEnd = addDays(ovulation, OVULATORY_DAYS_AROUND_OVULATION);
+  const ovulatoryStart = addDays(cycle.ovulationEarliest, -OVULATORY_DAYS_AROUND_OVULATION);
+  const ovulatoryEnd = addDays(cycle.ovulationLatest, OVULATORY_DAYS_AROUND_OVULATION);
   if (today < ovulatoryStart) return { name: 'follicular', lastDay: addDays(ovulatoryStart, -1) };
   if (today <= ovulatoryEnd) return { name: 'ovulatory', lastDay: ovulatoryEnd };
   return { name: 'luteal', lastDay: addDays(nextPeriodStart, -1) };
@@ -152,12 +162,13 @@ export function predictCycles(logs, settings, today) {
   const completedCycles = periods.slice(0, -1).map((period, i) => {
     const nextStart = periods[i + 1].start;
     const surgeStarts = findSurgeStarts(logs, period.start, nextStart);
+    // Measured from the earliest possible ovulation day, so every measurement starts from the same point in the surge.
     const canMeasureLutealLength = surgeStarts.length === 1 && isPlausibleCycleLength(daysBetween(period.start, nextStart));
     return {
       start: period.start,
       nextStart,
       surgeStarts,
-      measuredLutealLength: canMeasureLutealLength ? daysBetween(ovulationAfterSurge(surgeStarts[0]), nextStart) : null,
+      measuredLutealLength: canMeasureLutealLength ? daysBetween(likelyOvulationDatesAfterSurge(surgeStarts[0])[0], nextStart) : null,
     };
   });
   const measuredLutealLengths = completedCycles
@@ -211,7 +222,7 @@ export function predictCycles(logs, settings, today) {
     isLutealLengthMeasured,
     measuredLutealLengths,
     cycleDay: daysBetween(lastPeriod.start, today) + 1,
-    phase: phaseOn(today, ongoingPeriod, futureCycles[0].ovulation, nextPeriodStart),
+    phase: phaseOn(today, ongoingPeriod, futureCycles[0], nextPeriodStart),
     ongoingPeriod,
     nextPeriod: {
       start: nextPeriodStart,
@@ -239,7 +250,7 @@ export function classifyDay(date, prediction) {
       (c) => c.predictedPeriod && isWithin(c.predictedPeriod.start, c.predictedPeriod.end),
     ),
     isFertile: prediction.cycles.some((c) => isWithin(c.fertileStart, c.fertileEnd)),
-    isOvulation: prediction.cycles.some((c) => c.ovulation === date),
+    isOvulation: prediction.cycles.some((c) => isWithin(c.ovulationEarliest, c.ovulationLatest)),
     isImplantation: prediction.cycles.some((c) => isWithin(c.implantationStart, c.implantationEnd)),
   };
 }

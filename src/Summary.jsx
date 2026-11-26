@@ -66,7 +66,9 @@ export default function Summary({ prediction, today }) {
             {formatShort(upcomingFertility.fertileStart)} to {formatShort(upcomingFertility.fertileEnd)}
           </span>
           <span className="detail">
-            Ovulation around {formatShort(upcomingFertility.ovulation)}
+            Ovulation around {formatShort(upcomingFertility.ovulationEarliest)}
+            {upcomingFertility.ovulationLatest !== upcomingFertility.ovulationEarliest &&
+              ` to ${formatShort(upcomingFertility.ovulationLatest)}`}
             {upcomingFertility.surgeStart && ', from your positive test'}
             {upcomingFertility.hasSeveralSurges && (
               <>
