@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { classifyDay } from './cycle.js';
-import { CrampMark, FlowMark, NoteMark, PainkillerMark, SexMark } from './DayMarks.jsx';
+import { CrampMark, FlowMark, NoteMark, PainkillerMark, PositiveOvulationTestMark, SexMark } from './DayMarks.jsx';
 import { formatMonth, isoForYearMonthDay, weekdayMondayFirst } from './dates.js';
 
 const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -56,6 +56,7 @@ export default function Calendar({ logs, prediction, today, selectedDate, onSele
                 {dayLog?.cramps > 0 && <CrampMark cramps={dayLog.cramps} />}
                 {(dayLog?.symptoms?.length > 0 || dayLog?.notes) && <NoteMark />}
                 {dayLog?.painkillers?.length > 0 && <PainkillerMark />}
+                {dayLog?.ovulationTest === 'positive' && <PositiveOvulationTestMark />}
                 {dayLog?.unprotectedSex && <SexMark />}
               </span>
             </button>
@@ -69,6 +70,7 @@ export default function Calendar({ logs, prediction, today, selectedDate, onSele
         <span><i className="swatch is-fertile" /> Fertile window</span>
         <span><i className="swatch is-ovulation" /> Ovulation</span>
         <span><i className="swatch is-implantation" /> Possible implantation</span>
+        <span><PositiveOvulationTestMark /> Positive ovulation test</span>
         <span><SexMark /> Unprotected sex</span>
       </div>
     </section>

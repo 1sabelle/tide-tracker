@@ -17,6 +17,8 @@ export const PAINKILLERS = ['ibuprofen', 'paracetamol'];
 export const MOODS = ['happy', 'calm', 'sensitive', 'irritable', 'low', 'anxious'];
 // Only a noticeably low or high day is logged; nothing logged means nothing stood out.
 export const LIBIDO_LEVELS = ['low', 'high'];
+// The result of an LH ovulation test taken that day; nothing logged means no test was taken.
+export const OVULATION_TEST_RESULTS = ['negative', 'positive'];
 
 export const EMPTY_DAY_LOG = {
   flow: 'none',
@@ -25,6 +27,7 @@ export const EMPTY_DAY_LOG = {
   painkillers: [],
   mood: null,
   libido: null,
+  ovulationTest: null,
   notes: '',
   unprotectedSex: false,
 };
@@ -228,6 +231,7 @@ export function isEmptyLog(dayLog) {
     (dayLog.painkillers ?? []).length === 0 &&
     !dayLog.mood &&
     !dayLog.libido &&
+    !dayLog.ovulationTest &&
     !dayLog.unprotectedSex &&
     !(dayLog.notes ?? '').trim()
   );

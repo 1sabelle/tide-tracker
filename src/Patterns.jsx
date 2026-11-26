@@ -27,7 +27,7 @@ export default function Patterns({ logs, prediction, today }) {
       {!hasEnoughCycles ? (
         <p className="empty">Patterns appear once you have logged at least two cycles.</p>
       ) : rows.length === 0 ? (
-        <p className="empty">Log symptoms, cramps, painkillers, mood or libido and patterns across your cycles will show here.</p>
+        <p className="empty">Log symptoms, cramps, painkillers, mood, libido or ovulation tests and patterns across your cycles will show here.</p>
       ) : (
         <>
           <p className="subheading">How often each thing was logged on each day of your cycle, across {cycleCount} cycles</p>

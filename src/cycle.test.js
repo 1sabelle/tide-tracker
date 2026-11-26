@@ -184,6 +184,15 @@ describe('parseData', () => {
     expect(errors).toEqual(['2026-01-02: libido "medium" is not one of low, high.']);
   });
 
+  it('keeps logged ovulation test results and reports unknown ones', () => {
+    const { data, errors } = parseData({
+      logs: { '2026-01-01': { ovulationTest: 'positive' }, '2026-01-02': { ovulationTest: 'faint' } },
+    });
+    expect(data.logs['2026-01-01'].ovulationTest).toBe('positive');
+    expect(data.logs['2026-01-02']).toBeUndefined();
+    expect(errors).toEqual(['2026-01-02: ovulationTest "faint" is not one of negative, positive.']);
+  });
+
   it('reports every invalid entry and keeps the valid ones', () => {
     const { data, errors } = parseData({
       logs: {

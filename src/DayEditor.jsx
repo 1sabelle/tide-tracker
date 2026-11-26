@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { CRAMP_LEVELS, EMPTY_DAY_LOG, FLOW_LEVELS, LIBIDO_LEVELS, MOODS, PAINKILLERS, SYMPTOMS } from './cycle.js';
+import { CRAMP_LEVELS, EMPTY_DAY_LOG, FLOW_LEVELS, LIBIDO_LEVELS, MOODS, OVULATION_TEST_RESULTS, PAINKILLERS, SYMPTOMS } from './cycle.js';
 import { formatLong } from './dates.js';
-import { CrampMark, FlowMark, NoteMark, PainkillerMark, SexMark } from './DayMarks.jsx';
+import { CrampMark, FlowMark, NoteMark, PainkillerMark, PositiveOvulationTestMark, SexMark } from './DayMarks.jsx';
 
 // Judged by the heaviest stretch of the day, from how fast a regular pad or tampon fills.
 const FLOW_GUIDE = {
@@ -123,6 +123,23 @@ export default function DayEditor({ date, dayLog = EMPTY_DAY_LOG, onChange }) {
               onClick={() => update({ mood: log.mood === mood ? null : mood })}
             >
               {mood}
+            </button>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Ovulation test</legend>
+        <div className="chips">
+          {OVULATION_TEST_RESULTS.map((result) => (
+            <button
+              key={result}
+              className={`chip ${log.ovulationTest === result ? 'on' : ''}`}
+              aria-pressed={log.ovulationTest === result}
+              onClick={() => update({ ovulationTest: log.ovulationTest === result ? null : result })}
+            >
+              {result === 'positive' && <PositiveOvulationTestMark />}
+              {result}
             </button>
           ))}
         </div>

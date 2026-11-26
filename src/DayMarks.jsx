@@ -18,6 +18,10 @@ export function PainkillerMark() {
   return <span className="painkiller-mark" aria-label="painkillers" />;
 }
 
+export function PositiveOvulationTestMark() {
+  return <span className="ovulation-test-mark" aria-label="positive ovulation test">+</span>;
+}
+
 export function SexMark() {
   return <span className="sex-mark" aria-label="unprotected sex">♥</span>;
 }

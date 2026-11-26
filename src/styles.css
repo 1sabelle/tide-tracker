@@ -110,6 +110,7 @@ section, .settings, .collapsible { background: var(--surface); border: 1px solid
 .chip:hover { background: var(--hover); }
 .chip { display: inline-flex; align-items: center; gap: 6px; }
 .chip.on .cramp-mark { color: var(--on-accent); }
+.chip.on .ovulation-test-mark { color: var(--on-accent); }
 .editor legend { display: flex; align-items: center; gap: 6px; }
 .chip.on { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .chip.on:hover { background: var(--accent-hover); }
@@ -157,6 +158,8 @@ select option { background: #151b2a; color: var(--text); }
 textarea:focus, input:focus, select:focus { outline: 1px solid var(--accent); background: var(--hover); }
 
 .sex-mark { color: #e68aae; font-size: 0.65rem; line-height: 1; }
+.ovulation-test-mark { color: var(--ovulation); font-size: 0.75rem; font-weight: 700; line-height: 1; }
+.legend .ovulation-test-mark { font-size: 0.95rem; width: 14px; text-align: center; }
 .legend .sex-mark { font-size: 0.85rem; width: 14px; text-align: center; }
 
 .pregnancy .verdict { margin: 0 0 6px; }
